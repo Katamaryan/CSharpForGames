@@ -36,7 +36,7 @@ public class MovingObstacle : MonoBehaviour
 
         //final way of moving, this one moves to a location of stops once reached
         transform.position = Vector2.MoveTowards(transform.position, m_target.position, m_speed * Time.deltaTime);
-        
+        transform.Rotate(Vector3.forward * 100 * Time.deltaTime);
     }
 
     void ChangeTarget()
@@ -51,6 +51,14 @@ public class MovingObstacle : MonoBehaviour
         if (collision.CompareTag("MovingObstacleWaypoint"))
         {
             ChangeTarget();
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            Debug.Log("Player hit");
         }
     }
 }
