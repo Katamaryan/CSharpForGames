@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,8 +7,11 @@ using UnityEngine.InputSystem;
 /// Implements the player controls for moving and shooting.
 /// Updates the player animator so the character animates based on input.
 /// </summary>
+
+
 public class TopDownCharacterController : MonoBehaviour
 {
+    
     #region Framework Variables
 
     //The inputs that we need to retrieve from the input system.
@@ -29,6 +33,16 @@ public class TopDownCharacterController : MonoBehaviour
     [SerializeField] private float m_playerMaxSpeed = 1000f;
 
     #endregion
+    [Header("Projectile parameters")]
+    //allows use of the projectile asset as a game object in the code
+    [SerializeField] private GameObject m_projectilePrefab;
+    //location the projectile will spawn form
+    [SerializeField] private Transform m_firePoint;
+    //speed of projectile once fired
+    [SerializeField] private float m_projectileSpeed;
+    [SerializeField] float m_fireRate;
+    private float m_fireTimeout = 0;
+    private Vector2 m_lastDirection;
 
     /// <summary>
     /// When the script first initialises this gets called.
@@ -52,6 +66,7 @@ public class TopDownCharacterController : MonoBehaviour
     {
         //not currently used - left here for demonstration purposes.
     }
+
 
     /// <summary>
     /// When a fixed update loop is called, it runs at a constant rate, regardless of pc performance.
@@ -85,14 +100,35 @@ public class TopDownCharacterController : MonoBehaviour
         {
             m_animator.SetFloat("Horizontal", m_playerDirection.x);
             m_animator.SetFloat("Vertical", m_playerDirection.y);
+
+            m_lastDirection = m_playerDirection;
         }
 
         // check if an attack has been triggered.
-        if (m_attackAction.IsPressed())
+        if (m_attackAction.IsPressed() && Time.time > m_fireTimeout)
         {
             // just log that an attack has been registered for now
             // we will look at how to do this in future sessions.
-            Debug.Log("Attack!");
+            //Debug.Log("Attack!");
+
+            m_fireTimeout = Time.time + m_fireRate;
+            Fire();
+        }
+    }
+    private void Fire()
+    {
+        Vector2 fireDirection = m_lastDirection;
+        if (fireDirection == Vector2.zero)
+        {
+            fireDirection = Vector2.down;
+        }
+        GameObject spawnedProjectile = Instantiate(m_projectilePrefab, m_firePoint.position, Quaternion.identity);
+
+        Rigidbody2D projectileRB = spawnedProjectile.GetComponent<Rigidbody2D>();
+        if ( projectileRB!= null)
+        {
+            projectileRB.AddForce(fireDirection.normalized * m_projectileSpeed, ForceMode2D.Impulse);
+
         }
     }
 }
