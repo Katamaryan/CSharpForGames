@@ -7903,7 +7903,7 @@ MonoBehaviour:
   m_projectilePrefab: {fileID: 5667811867621469979, guid: d2d49ddfed456bd44958699acf6daee6, type: 3}
   m_firePoint: {fileID: 31886688}
   m_projectileSpeed: 10
-  m_fireRate: 10
+  m_fireRate: 1
 --- !u!1 &1671010416
 GameObject:
   m_ObjectHideFlags: 0

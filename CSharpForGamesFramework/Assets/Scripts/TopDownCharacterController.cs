@@ -43,6 +43,7 @@ public class TopDownCharacterController : MonoBehaviour
     [SerializeField] float m_fireRate;
     private float m_fireTimeout = 0;
     private Vector2 m_lastDirection;
+    private Vector3 mousePointOnScreen;
 
     /// <summary>
     /// When the script first initialises this gets called.
@@ -90,7 +91,8 @@ public class TopDownCharacterController : MonoBehaviour
     {
         // store any movement inputs into m_playerDirection - this will be used in FixedUpdate to move the player.
         m_playerDirection = m_moveAction.ReadValue<Vector2>();
-        
+        mousePointOnScreen = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+
         // ~~ handle animator ~~
         // Update the animator speed to ensure that we revert to idle if the player doesn't move.
         m_animator.SetFloat("Speed", m_playerDirection.magnitude);
@@ -117,11 +119,13 @@ public class TopDownCharacterController : MonoBehaviour
     }
     private void Fire()
     {
-        Vector2 fireDirection = m_lastDirection;
-        if (fireDirection == Vector2.zero)
-        {
-            fireDirection = Vector2.down;
-        }
+        Vector2 fireDirection = mousePointOnScreen - transform.position;
+        //Vector2 fireDirection = m_lastDirection;
+        //if (fireDirection == Vector2.zero)
+        //{
+        //    fireDirection = Vector2.down;
+        //}
+
         GameObject spawnedProjectile = Instantiate(m_projectilePrefab, m_firePoint.position, Quaternion.identity);
 
         Rigidbody2D projectileRB = spawnedProjectile.GetComponent<Rigidbody2D>();
