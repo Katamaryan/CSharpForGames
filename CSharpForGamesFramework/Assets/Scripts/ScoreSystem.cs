@@ -3,7 +3,7 @@ using UnityEngine;
 public class ScoreSystem : MonoBehaviour
 {
     // The Current score of the player
-    int m_score;
+    public int m_score;
 
     /// <summary>
     /// Method to add a given amount of score to the player
@@ -15,4 +15,9 @@ public class ScoreSystem : MonoBehaviour
         //Increment the player score by the amount to add.
         m_score += scoreToAdd;
     }
+
+    //public void Update()
+    //{
+    //    m_score += 10;
+    //}
 }
