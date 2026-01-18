@@ -16,8 +16,4 @@ public class ScoreSystem : MonoBehaviour
         m_score += scoreToAdd;
     }
 
-    //public void Update()
-    //{
-    //    m_score += 10;
-    //}
 }

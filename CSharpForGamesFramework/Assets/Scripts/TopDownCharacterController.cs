@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -125,7 +126,6 @@ public class TopDownCharacterController : MonoBehaviour
         //{
         //    fireDirection = Vector2.down;
         //}
-
         GameObject spawnedProjectile = Instantiate(m_projectilePrefab, m_firePoint.position, Quaternion.identity);
 
         Rigidbody2D projectileRB = spawnedProjectile.GetComponent<Rigidbody2D>();
