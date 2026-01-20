@@ -8,7 +8,9 @@ public class Damage : MonoBehaviour
 
         if(!collision.gameObject.CompareTag("Player"))
         {
+            Vector3 explosionPos = transform.position;
             Destroy(gameObject);
+            VFXManager.CreateExplosion(explosionPos);
         }
     }
 }

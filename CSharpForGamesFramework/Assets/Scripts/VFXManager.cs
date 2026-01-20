@@ -13,6 +13,12 @@ public class VFXManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Creates an explosion at a position and destroys it after time has passed.
+    /// </summary>
+    /// <param name="position"> The position the explosion should spawn</param>
+    /// <param name="destroyAfter"> the duration of the explosion before destruction</param>
+    /// <returns></returns>
     // Update is called once per frame
     public static GameObject CreateExplosion(Vector3 position, float destroyAfter = 0.5f)
     {

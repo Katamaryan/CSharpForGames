@@ -18,6 +18,7 @@ public class TopDownCharacterController : MonoBehaviour
     //The inputs that we need to retrieve from the input system.
     private InputAction m_moveAction;
     private InputAction m_attackAction;
+    private InputAction m_rollAction;
 
     //The components that we need to edit to make the player move smoothly.
     private Animator m_animator;
@@ -32,6 +33,10 @@ public class TopDownCharacterController : MonoBehaviour
     [SerializeField] private float m_playerSpeed = 200f;
     //The maximum speed the player can move
     [SerializeField] private float m_playerMaxSpeed = 1000f;
+    //The length of time between player rolls
+    [SerializeField] private float m_rollRate;
+    private float m_rollTimeOut;
+
 
     #endregion
     [Header("Projectile parameters")]
@@ -55,6 +60,7 @@ public class TopDownCharacterController : MonoBehaviour
         //bind movement inputs to variables
         m_moveAction = InputSystem.actions.FindAction("Move");
         m_attackAction = InputSystem.actions.FindAction("Attack");
+        m_rollAction = InputSystem.actions.FindAction("Jump");
         
         //get components from Character game object so that we can use them later.
         m_animator = GetComponent<Animator>();
@@ -77,6 +83,7 @@ public class TopDownCharacterController : MonoBehaviour
     private void FixedUpdate()
     {
         //clamp the speed to the maximum speed for if the speed has been changed in code.
+        //ternary form works by checking if the stuff before the question mark is true or false, then does either left side of colon if ture or right side if false.,
         float speed = m_playerSpeed > m_playerMaxSpeed ? m_playerMaxSpeed : m_playerSpeed;
         
         //apply the movement to the character using the clamped speed value.
@@ -92,6 +99,7 @@ public class TopDownCharacterController : MonoBehaviour
     {
         // store any movement inputs into m_playerDirection - this will be used in FixedUpdate to move the player.
         m_playerDirection = m_moveAction.ReadValue<Vector2>();
+        //sets the position of the mouse cursor on screen
         mousePointOnScreen = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 
         // ~~ handle animator ~~
@@ -105,6 +113,11 @@ public class TopDownCharacterController : MonoBehaviour
             m_animator.SetFloat("Vertical", m_playerDirection.y);
 
             m_lastDirection = m_playerDirection;
+            if (m_rollAction.IsPressed() && Time.time > m_rollTimeOut)
+            {
+                m_rollTimeOut = Time.time + m_rollRate;
+                m_animator.SetTrigger("Rolling");
+            }
         }
 
         // check if an attack has been triggered.
