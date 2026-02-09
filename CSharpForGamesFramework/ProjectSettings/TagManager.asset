@@ -6,6 +6,8 @@ TagManager:
   tags:
   - MovingObstacleWaypoint
   - ScorePickup
+  - Enemy
+  - Detection
   layers:
   - Default
   - TransparentFX
