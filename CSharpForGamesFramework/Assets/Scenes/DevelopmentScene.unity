@@ -204,7 +204,7 @@ MonoBehaviour:
   m_stoppingDistance: 2
   m_projectilePrefab: {fileID: 7959504206778929787, guid: b44499ec84289d045b5fe414e83c9e3d, type: 3}
   m_projectileSpeed: 5
-  m_fireRate: 12
+  m_fireRate: 2
 --- !u!50 &66206791
 Rigidbody2D:
   serializedVersion: 5
@@ -11032,7 +11032,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_playerSpeed: 200
   m_playerMaxSpeed: 1000
-  m_rollRate: 2
+  m_rollRate: 0.5
   m_projectilePrefab: {fileID: 5667811867621469979, guid: d2d49ddfed456bd44958699acf6daee6, type: 3}
   m_firePoint: {fileID: 31886688}
   m_projectileSpeed: 10
@@ -24479,7 +24479,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 1
+  m_Radius: 2
 --- !u!1 &2064829357
 GameObject:
   m_ObjectHideFlags: 0
