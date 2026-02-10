@@ -1,4 +1,5 @@
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class EnemyController : MonoBehaviour
 {
@@ -12,8 +13,6 @@ public class EnemyController : MonoBehaviour
     [SerializeField] float m_fireRate;
     private float m_fireTimeout = 0;
 
-
-    //[SerializeField, Range(1f, 10f)] private float m_idleRadius;
     enum EnemyStates
     {
         Idle,
@@ -27,6 +26,7 @@ public class EnemyController : MonoBehaviour
     void Start()
     {
         m_Player = FindObjectOfType<TopDownCharacterController>().transform;
+
     }
 
     // Update is called once per frame
@@ -37,18 +37,7 @@ public class EnemyController : MonoBehaviour
             switch (m_enemyStates)
         {
             case EnemyStates.Idle:
-
-                //Vector3 idlePos = transform.position;
-                //idlePos += (Vector3)UnityEngine.Random.insideUnitCircle.normalized * m_idleRadius;
-
-                //transform.position = Vector2.MoveTowards(transform.position, idlePos, m_speed * Time.deltaTime);
-                
-                //if (transform.position == idlePos)
-                //{
-                //    idlePos = transform.position;
-                //    idlePos += (Vector3)UnityEngine.Random.insideUnitCircle.normalized * m_idleRadius;
-                //}
-
+                transform.position = Vector2.MoveTowards(transform.position, Vector2(5,4,0) , m_speed * Time.deltaTime);
                 break;
             case EnemyStates.MoveToPlayer:
                 transform.position = Vector2.MoveTowards(transform.position, m_Player.position, m_speed * Time.deltaTime);
@@ -74,10 +63,7 @@ public class EnemyController : MonoBehaviour
                 break;
         }
 
-        if (m_PlayerInSight && Vector2.Distance(transform.position, m_Player.position) >= m_stoppingDistance)
-        {
-            m_enemyStates = EnemyStates.MoveToPlayer;
-        }
+
         if (!m_PlayerInSight)
         {
             m_enemyStates = EnemyStates.Idle;
@@ -86,16 +72,27 @@ public class EnemyController : MonoBehaviour
         {
             m_enemyStates = EnemyStates.Attack;
         }
+        if (m_PlayerInSight && Vector2.Distance(transform.position, m_Player.position) >= m_stoppingDistance)
+        {
+            m_enemyStates = EnemyStates.MoveToPlayer;
+        }
 
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        m_PlayerInSight = true;
-    }
+        if (collision.gameObject == GameObject.Find("Character"))
+        {
+            m_PlayerInSight = true;
 
+        }
+    }
+   
     private void OnTriggerExit2D(Collider2D collision)
     {
-        m_PlayerInSight = false;   
+        if (collision.gameObject == GameObject.Find("Character"))
+        {
+            m_PlayerInSight = false;
+        }
     }
 }
