@@ -37,7 +37,7 @@ public class EnemyController : MonoBehaviour
             switch (m_enemyStates)
         {
             case EnemyStates.Idle:
-                transform.position = Vector2.MoveTowards(transform.position, Vector2(5,4,0) , m_speed * Time.deltaTime);
+
                 break;
             case EnemyStates.MoveToPlayer:
                 transform.position = Vector2.MoveTowards(transform.position, m_Player.position, m_speed * Time.deltaTime);
