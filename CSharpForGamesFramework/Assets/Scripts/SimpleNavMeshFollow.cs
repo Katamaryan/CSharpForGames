@@ -27,7 +27,6 @@ public class SimpleNavMeshFollow : MonoBehaviour
     void Start()
     {
         m_agent = GetComponent<NavMeshAgent>();
-        m_target = FindObjectOfType<TopDownCharacterController>().transform;
 
     }
 
@@ -66,6 +65,7 @@ public class SimpleNavMeshFollow : MonoBehaviour
 
         if (!m_PlayerInSight)
         {
+            Debug.Log("why tf is this one on all the time");
             m_enemyStates = EnemyStates.Idle;
         }
         if (Vector2.Distance(transform.position, m_target.position) <= m_stoppingDistance)
@@ -74,14 +74,16 @@ public class SimpleNavMeshFollow : MonoBehaviour
         }
         if (m_PlayerInSight && Vector2.Distance(transform.position, m_target.position) >= m_stoppingDistance)
         {
+            Debug.Log("This shit works");
             m_enemyStates = EnemyStates.MoveToPlayer;
         }
         
     }
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)  
     {
-        if (collision.gameObject == GameObject.Find("Character"))
+        if (collision.gameObject.CompareTag("Player"))
         {
+            Debug.Log("we are running properly");
             m_PlayerInSight = true;
 
         }
@@ -89,8 +91,9 @@ public class SimpleNavMeshFollow : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject == GameObject.Find("Character"))
+        if (collision.gameObject.CompareTag("Player"))
         {
+            Debug.Log("We are shit and we stink");
             m_PlayerInSight = false;
         }
     }

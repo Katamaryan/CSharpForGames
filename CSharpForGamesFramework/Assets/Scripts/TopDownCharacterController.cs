@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -14,11 +15,6 @@ public class TopDownCharacterController : MonoBehaviour
 {
     
     #region Framework Variables
-
-    //The inputs that we need to retrieve from the input system.
-    private InputAction m_moveAction;
-    private InputAction m_attackAction;
-    private InputAction m_rollAction;
 
     //The components that we need to edit to make the player move smoothly.
     private Animator m_animator;
@@ -37,7 +33,6 @@ public class TopDownCharacterController : MonoBehaviour
     [SerializeField] private float m_rollRate;
     private float m_rollTimeOut;
 
-
     #endregion
     [Header("Projectile parameters")]
     //allows use of the projectile asset as a game object in the code
@@ -48,8 +43,7 @@ public class TopDownCharacterController : MonoBehaviour
     [SerializeField] private float m_projectileSpeed;
     [SerializeField] float m_fireRate;
     private float m_fireTimeout = 0;
-    private Vector2 m_lastDirection;
-    private Vector3 mousePointOnScreen;
+    private Vector2 m_fireDirection;
 
     /// <summary>
     /// When the script first initialises this gets called.
@@ -57,10 +51,6 @@ public class TopDownCharacterController : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        //bind movement inputs to variables
-        m_moveAction = InputSystem.actions.FindAction("Move");
-        m_attackAction = InputSystem.actions.FindAction("Attack");
-        m_rollAction = InputSystem.actions.FindAction("Jump");
         
         //get components from Character game object so that we can use them later.
         m_animator = GetComponent<Animator>();
@@ -98,9 +88,9 @@ public class TopDownCharacterController : MonoBehaviour
     void Update()
     {
         // store any movement inputs into m_playerDirection - this will be used in FixedUpdate to move the player.
-        m_playerDirection = m_moveAction.ReadValue<Vector2>();
+        //m_playerDirection = m_moveAction.ReadValue<Vector2>();
         //sets the position of the mouse cursor on screen
-        mousePointOnScreen = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+        //mousePointOnScreen = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 
         // ~~ handle animator ~~
         // Update the animator speed to ensure that we revert to idle if the player doesn't move.
@@ -112,33 +102,17 @@ public class TopDownCharacterController : MonoBehaviour
             m_animator.SetFloat("Horizontal", m_playerDirection.x);
             m_animator.SetFloat("Vertical", m_playerDirection.y);
 
-            m_lastDirection = m_playerDirection;
-            if (m_rollAction.IsPressed() && Time.time > m_rollTimeOut)
-            {
-                m_rollTimeOut = Time.time + m_rollRate;
-                m_animator.SetTrigger("Rolling");
-            }
         }
 
-        // check if an attack has been triggered.
-        if (m_attackAction.IsPressed() && Time.time > m_fireTimeout)
-        {
-            // just log that an attack has been registered for now
-            // we will look at how to do this in future sessions.
-            //Debug.Log("Attack!");
-
-            m_fireTimeout = Time.time + m_fireRate;
-            Fire();
-        }
+        
     }
     private void Fire()
     {
-        Vector2 fireDirection = mousePointOnScreen - transform.position;
-        //Vector2 fireDirection = m_lastDirection;
-        //if (fireDirection == Vector2.zero)
-        //{
-        //    fireDirection = Vector2.down;
-        //}
+        Vector2 fireDirection = m_fireDirection;
+        if (fireDirection == Vector2.zero)
+        {
+            fireDirection = Vector2.down;
+        }
         GameObject spawnedProjectile = Instantiate(m_projectilePrefab, m_firePoint.position, Quaternion.identity);
 
         Rigidbody2D projectileRB = spawnedProjectile.GetComponent<Rigidbody2D>();
@@ -148,4 +122,39 @@ public class TopDownCharacterController : MonoBehaviour
 
         }
     }
+
+    //makes the fire input as the arrow keys
+    public void HandleAttack(InputAction.CallbackContext ctx)
+    {
+        if (ctx.performed && Time.time > m_fireTimeout)
+        {
+            m_fireTimeout = Time.time + m_fireRate;
+            m_fireDirection = ctx.ReadValue<Vector2>();
+            Fire();
+        }
+    }
+
+    public void HandleMove(InputAction.CallbackContext ctx)
+    {
+        //reads the input given and determines the direction based on input
+        if (ctx.performed)
+        {
+            m_playerDirection = ctx.ReadValue<Vector2>();
+        }
+        //when no input is pressed it will default the direction to zero/no direction
+        else if (ctx.canceled)
+        {
+            m_playerDirection = Vector2.zero;
+        }
+    }
+
+    public void HandleRoll(InputAction.CallbackContext ctx)
+    {
+        if (ctx.performed && Time.time > m_rollTimeOut)
+        {
+            m_rollTimeOut = Time.time + m_rollRate;
+            m_animator.SetTrigger("Rolling");
+        }
+    }
+
 }

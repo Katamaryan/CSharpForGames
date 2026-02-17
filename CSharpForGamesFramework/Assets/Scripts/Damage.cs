@@ -6,7 +6,7 @@ public class Damage : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
 
-        if(!collision.gameObject.CompareTag("Player") && !collision.gameObject.CompareTag("Detection"))
+        if(!collision.gameObject.CompareTag("Player") && !collision.gameObject.CompareTag("Projectile") && !collision.gameObject.CompareTag("Detection"))
         {
             Vector3 explosionPos = transform.position;
             Destroy(gameObject);

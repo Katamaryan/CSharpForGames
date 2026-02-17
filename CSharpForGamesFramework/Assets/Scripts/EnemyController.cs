@@ -72,7 +72,7 @@ public class EnemyController : MonoBehaviour
         {
             m_enemyStates = EnemyStates.Attack;
         }
-        if (m_PlayerInSight && Vector2.Distance(transform.position, m_Player.position) >= m_stoppingDistance)
+        if (m_PlayerInSight && Vector2.Distance(transform.position, m_Player.position) > m_stoppingDistance)
         {
             m_enemyStates = EnemyStates.MoveToPlayer;
         }
