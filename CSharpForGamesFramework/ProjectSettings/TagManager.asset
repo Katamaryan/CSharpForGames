@@ -9,6 +9,7 @@ TagManager:
   - Enemy
   - Detection
   - Projectile
+  - ScoreSystem
   layers:
   - Default
   - TransparentFX

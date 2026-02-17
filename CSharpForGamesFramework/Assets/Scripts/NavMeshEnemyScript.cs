@@ -12,14 +12,14 @@ public class NavMeshEnemyScript : MonoBehaviour
     public Coroutine m_behaviourState;
     bool m_playerInSight;
 
-    private float m_followDistance = 10;
+    [SerializeField]private float m_followDistance = 10;
+    [SerializeField]private float m_attackDistance = 3;
     [SerializeField] private float m_detectionTime;
     [SerializeField] private float m_idleSpeed;
 
     [SerializeField] private GameObject m_projectilePrefab;
     [SerializeField] private float m_projectileSpeed;
-    [SerializeField] float m_fireRate;
-    private float m_fireTimeout = 0;
+    [SerializeField] private float m_fireRate;
 
     public Transform[] m_path;
 
@@ -51,9 +51,13 @@ public class NavMeshEnemyScript : MonoBehaviour
         {
             UpdateBehaviour(EnemyState.Suspicious);
         }
-        else if (Vector2.Distance(m_target.transform.position, transform.position) <= m_followDistance && m_enemyState != EnemyState.Follow && m_playerInSight == true)
+        else if (Vector2.Distance(m_target.transform.position, transform.position) <= m_followDistance && Vector2.Distance(m_target.transform.position, transform.position) > m_attackDistance && m_enemyState != EnemyState.Follow && m_playerInSight == true)
         {
             UpdateBehaviour(EnemyState.Follow);
+        }
+        else if (Vector2.Distance(transform.position, m_target.transform.position) <= m_attackDistance && m_enemyState != EnemyState.Attack)
+        {
+            UpdateBehaviour(EnemyState.Attack);
         }
     }
 
@@ -74,11 +78,10 @@ public class NavMeshEnemyScript : MonoBehaviour
                 m_behaviourState = StartCoroutine(Suspicious());
                 break;
             case EnemyState.Follow:
-
                 m_behaviourState = StartCoroutine(Follow());
                 break;
             case EnemyState.Attack:
-
+                m_behaviourState = StartCoroutine(Attack());
                 break;
             default:
 
@@ -103,6 +106,7 @@ public class NavMeshEnemyScript : MonoBehaviour
         {
             
             m_playerInSight = false;
+            m_agent.ResetPath();
             //m_agent.SetDestination(m_path[m_currentWaypoint].position);
             transform.position = Vector2.MoveTowards(transform.position, m_path[m_currentWaypoint].position, m_idleSpeed * Time.deltaTime);
             if ((Vector2)transform.position == (Vector2)m_path[m_currentWaypoint].position)
@@ -138,6 +142,24 @@ public class NavMeshEnemyScript : MonoBehaviour
         {
             m_agent.SetDestination(m_target.transform.position);
             yield return null;
+        }
+    }
+
+    public IEnumerator Attack()
+    {
+        while(true)
+        {
+            Vector2 fireDirection = m_target.transform.position - transform.position;
+
+            GameObject spawnedProjectile = Instantiate(m_projectilePrefab, transform.position, Quaternion.identity);
+
+            Rigidbody2D projectileRB = spawnedProjectile.GetComponent<Rigidbody2D>();
+            if (projectileRB != null)
+            {
+                projectileRB.AddForce(fireDirection.normalized * m_projectileSpeed, ForceMode2D.Impulse);
+
+            }
+            yield return new WaitForSeconds(m_fireRate);
         }
     }
 }
