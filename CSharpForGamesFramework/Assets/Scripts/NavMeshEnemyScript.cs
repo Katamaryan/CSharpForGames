@@ -23,6 +23,24 @@ public class NavMeshEnemyScript : MonoBehaviour
 
     public Transform[] m_path;
 
+    public float m_fovRadius;
+    [Range(0, 360)] public float m_fovAngle;
+    public Vector2 m_lookDirection = Vector2.down;
+
+    public bool IsTargetInsideFOV()
+    {
+        Vector2 m_directionToTarget = (m_target.transform.position - transform.position).normalized;
+        float m_angleToTarget = Vector2.Angle(m_lookDirection, m_directionToTarget);
+
+        if (m_angleToTarget < m_fovAngle / 2)
+        {
+            float m_distance = Vector2.Distance(m_target.transform.position, transform.position);
+            Debug.Log("I SEE YOU");
+            return m_distance < m_fovRadius;
+        }
+        return false;
+    }
+
     enum EnemyState
     {
         Idle,
@@ -43,11 +61,12 @@ public class NavMeshEnemyScript : MonoBehaviour
 
     private void Update()
     {
+        
         if (Vector2.Distance(m_target.transform.position, transform.position) > m_followDistance && m_enemyState != EnemyState.Idle)
         {
             UpdateBehaviour(EnemyState.Idle);
         }
-        else if (Vector2.Distance(m_target.transform.position, transform.position) <= m_followDistance && m_enemyState != EnemyState.Suspicious && m_playerInSight == false)
+        else if (Vector2.Distance(m_target.transform.position, transform.position) <= m_followDistance && m_enemyState != EnemyState.Suspicious && m_playerInSight == false && IsTargetInsideFOV() == true)
         {
             UpdateBehaviour(EnemyState.Suspicious);
         }
@@ -55,7 +74,7 @@ public class NavMeshEnemyScript : MonoBehaviour
         {
             UpdateBehaviour(EnemyState.Follow);
         }
-        else if (Vector2.Distance(transform.position, m_target.transform.position) <= m_attackDistance && m_enemyState != EnemyState.Attack)
+        else if (Vector2.Distance(transform.position, m_target.transform.position) <= m_attackDistance && m_enemyState != EnemyState.Attack && m_playerInSight == true)
         {
             UpdateBehaviour(EnemyState.Attack);
         }
@@ -104,7 +123,6 @@ public class NavMeshEnemyScript : MonoBehaviour
 
         while (true)
         {
-            
             m_playerInSight = false;
             m_agent.ResetPath();
             //m_agent.SetDestination(m_path[m_currentWaypoint].position);
@@ -120,6 +138,8 @@ public class NavMeshEnemyScript : MonoBehaviour
                     m_currentWaypoint++;
                 }
                 yield return new WaitForSeconds(2);
+                m_lookDirection = (m_path[m_currentWaypoint].position - transform.position).normalized;
+
             }
             yield return null;
             
@@ -140,6 +160,7 @@ public class NavMeshEnemyScript : MonoBehaviour
     {
         while (true)
         {
+            m_lookDirection = (transform.position - m_target.transform.position).normalized;
             m_agent.SetDestination(m_target.transform.position);
             yield return null;
         }
