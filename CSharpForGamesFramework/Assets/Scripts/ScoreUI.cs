@@ -8,7 +8,7 @@ public class ScoreUI : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        //ScoreSystem m_scoreSystem = GetComponent<ScoreSystem>;
+        m_scoreSystem.m_score = 0;
     }
 
     // Update is called once per frame

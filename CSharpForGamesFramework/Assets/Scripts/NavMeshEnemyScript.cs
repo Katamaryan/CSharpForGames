@@ -1,7 +1,8 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.InputSystem.Controls;
+using UnityEngine.UI;
 
 public class NavMeshEnemyScript : MonoBehaviour
 {
@@ -10,16 +11,22 @@ public class NavMeshEnemyScript : MonoBehaviour
 
     //Holds the current coroutine being used
     public Coroutine m_behaviourState;
+    public Coroutine m_activeChase;
     bool m_playerInSight;
+    public GameObject m_spotted;
+    public bool m_beenRobbed = false;
 
-    [SerializeField]private float m_followDistance = 10;
-    [SerializeField]private float m_attackDistance = 3;
+    [SerializeField] private float m_followDistance = 10;
+    [SerializeField] private float m_suspicionDistance = 1;
+    [SerializeField] private float m_attackDistance = 3;
     [SerializeField] private float m_detectionTime;
     [SerializeField] private float m_idleSpeed;
 
     [SerializeField] private GameObject m_projectilePrefab;
     [SerializeField] private float m_projectileSpeed;
     [SerializeField] private float m_fireRate;
+
+    [SerializeField] private GameObject m_moneyPrefab;
 
     public Transform[] m_path;
 
@@ -35,7 +42,6 @@ public class NavMeshEnemyScript : MonoBehaviour
         if (m_angleToTarget < m_fovAngle / 2)
         {
             float m_distance = Vector2.Distance(m_target.transform.position, transform.position);
-            Debug.Log("I SEE YOU");
             return m_distance < m_fovRadius;
         }
         return false;
@@ -64,18 +70,21 @@ public class NavMeshEnemyScript : MonoBehaviour
         
         if (Vector2.Distance(m_target.transform.position, transform.position) > m_followDistance && m_enemyState != EnemyState.Idle)
         {
+            
             UpdateBehaviour(EnemyState.Idle);
         }
-        else if (Vector2.Distance(m_target.transform.position, transform.position) <= m_followDistance && m_enemyState != EnemyState.Suspicious && m_playerInSight == false && IsTargetInsideFOV() == true)
+        else if ( m_enemyState != EnemyState.Suspicious && m_playerInSight == false && (IsTargetInsideFOV() == true || Vector2.Distance(m_target.transform.position, transform.position) <= m_suspicionDistance))
         {
             UpdateBehaviour(EnemyState.Suspicious);
         }
         else if (Vector2.Distance(m_target.transform.position, transform.position) <= m_followDistance && Vector2.Distance(m_target.transform.position, transform.position) > m_attackDistance && m_enemyState != EnemyState.Follow && m_playerInSight == true)
         {
+            
             UpdateBehaviour(EnemyState.Follow);
         }
         else if (Vector2.Distance(transform.position, m_target.transform.position) <= m_attackDistance && m_enemyState != EnemyState.Attack && m_playerInSight == true)
         {
+            
             UpdateBehaviour(EnemyState.Attack);
         }
     }
@@ -91,9 +100,11 @@ public class NavMeshEnemyScript : MonoBehaviour
         switch (m_enemyState)
         {
             case EnemyState.Idle:
+                m_spotted.SetActive(false);
                 m_behaviourState = StartCoroutine(Idle());
                 break;
             case EnemyState.Suspicious:
+                m_spotted.SetActive(true);
                 m_behaviourState = StartCoroutine(Suspicious());
                 break;
             case EnemyState.Follow:
@@ -110,8 +121,8 @@ public class NavMeshEnemyScript : MonoBehaviour
 
     public IEnumerator Idle()
     {
-        int m_currentWaypoint = 0;
 
+        int m_currentWaypoint = 0;
         //checks all waypoints on the patrol path array to see which is the closest to the enemy and dessignates that as the new closest path point
         for (int i = 0; i < m_path.Length; i++)
         {
@@ -141,6 +152,11 @@ public class NavMeshEnemyScript : MonoBehaviour
                 m_lookDirection = (m_path[m_currentWaypoint].position - transform.position).normalized;
 
             }
+            if (m_beenRobbed)
+            {
+                m_beenRobbed = false;
+                GameObject m_spawnedMoney = Instantiate(m_moneyPrefab, transform.position, Quaternion.identity);
+            }
             yield return null;
             
         }
@@ -150,6 +166,7 @@ public class NavMeshEnemyScript : MonoBehaviour
     {
         while (true)
         {
+            
             yield return new WaitForSeconds(m_detectionTime);
             m_playerInSight = true;
         }
@@ -168,7 +185,7 @@ public class NavMeshEnemyScript : MonoBehaviour
 
     public IEnumerator Attack()
     {
-        while(true)
+        while (true)
         {
             Vector2 fireDirection = m_target.transform.position - transform.position;
 
@@ -183,4 +200,5 @@ public class NavMeshEnemyScript : MonoBehaviour
             yield return new WaitForSeconds(m_fireRate);
         }
     }
+
 }

@@ -45,6 +45,7 @@ public class TopDownCharacterController : MonoBehaviour
     private float m_fireTimeout = 0;
     private Vector2 m_fireDirection;
 
+    public MenuManager m_menuManager;
     /// <summary>
     /// When the script first initialises this gets called.
     /// Use this for grabbing components and setting up input bindings.
@@ -55,6 +56,7 @@ public class TopDownCharacterController : MonoBehaviour
         //get components from Character game object so that we can use them later.
         m_animator = GetComponent<Animator>();
         m_rigidbody = GetComponent<Rigidbody2D>();
+        m_menuManager = GameObject.FindWithTag("Menu").GetComponent<MenuManager>();
     }
 
     /// <summary>
@@ -73,11 +75,12 @@ public class TopDownCharacterController : MonoBehaviour
     private void FixedUpdate()
     {
         //clamp the speed to the maximum speed for if the speed has been changed in code.
-        //ternary form works by checking if the stuff before the question mark is true or false, then does either left side of colon if ture or right side if false.,
+        //ternary form works by checking if the stuff before the question mark is true or false, then does either left side of colon if true or right side if false.,
         float speed = m_playerSpeed > m_playerMaxSpeed ? m_playerMaxSpeed : m_playerSpeed;
         
         //apply the movement to the character using the clamped speed value.
         m_rigidbody.linearVelocity = m_playerDirection * (speed * Time.fixedDeltaTime);
+
     }
     
     /// <summary>
@@ -108,6 +111,7 @@ public class TopDownCharacterController : MonoBehaviour
     }
     private void Fire()
     {
+        //determines the direction of firing
         Vector2 fireDirection = m_fireDirection;
         if (fireDirection == Vector2.zero)
         {
@@ -115,6 +119,7 @@ public class TopDownCharacterController : MonoBehaviour
         }
         GameObject spawnedProjectile = Instantiate(m_projectilePrefab, m_firePoint.position, Quaternion.identity);
 
+        //gives the spawned projectile force so that it moves
         Rigidbody2D projectileRB = spawnedProjectile.GetComponent<Rigidbody2D>();
         if ( projectileRB!= null)
         {
@@ -133,7 +138,7 @@ public class TopDownCharacterController : MonoBehaviour
             Fire();
         }
     }
-
+    //makes the move input as "WASD" keys
     public void HandleMove(InputAction.CallbackContext ctx)
     {
         //reads the input given and determines the direction based on input
@@ -157,4 +162,12 @@ public class TopDownCharacterController : MonoBehaviour
         }
     }
 
+    //makes the pause input as "E" key
+    public void HandlePause(InputAction.CallbackContext ctx)
+    {
+        if (ctx.performed)
+        {
+            m_menuManager.TogglePausePanel();
+        }
+    }
 }

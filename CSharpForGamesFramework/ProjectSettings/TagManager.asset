@@ -10,6 +10,7 @@ TagManager:
   - Detection
   - Projectile
   - ScoreSystem
+  - Menu
   layers:
   - Default
   - TransparentFX

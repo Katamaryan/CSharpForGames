@@ -1049,11 +1049,11 @@ MonoBehaviour:
     W/A/S/D - Movement
 
 
-    Mouse - Aim
+    Arrow keys - Aim and shoot
 
 
-    LMB -
-    Shoot'
+    Short
+    hold E - pause'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1724,6 +1724,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_menuPanel: {fileID: 402909131}
   m_controlsPanel: {fileID: 1227487412}
+  m_pausePanel: {fileID: 0}
+  m_deathPanel: {fileID: 0}
 --- !u!4 &1767339862
 Transform:
   m_ObjectHideFlags: 0

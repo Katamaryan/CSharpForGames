@@ -5,8 +5,10 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private GameObject m_menuPanel;
     [SerializeField] private GameObject m_controlsPanel;
     [SerializeField] private GameObject m_pausePanel;
+    [SerializeField] private GameObject m_deathPanel;
     private bool m_controlsPanelOpen = false;
     private bool m_pausePanelOpen = false;
+    private bool m_deathPanelOpen = false;
 
     public void LoadLevel1()
     {
@@ -45,7 +47,18 @@ public class MenuManager : MonoBehaviour
         }
         m_pausePanelOpen = !m_pausePanelOpen;
     }
-
+    public void ToggleDeathMenu()
+    {
+        if (m_deathPanelOpen)
+        {
+            m_deathPanel.SetActive(false);
+        }
+        else
+        {
+            m_deathPanel.SetActive(true);
+        }
+        m_deathPanelOpen = !m_deathPanelOpen;
+    }
     public void Quit()
     {
         Application.Quit();

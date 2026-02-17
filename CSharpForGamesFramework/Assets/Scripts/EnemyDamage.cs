@@ -2,17 +2,22 @@ using UnityEngine;
 
 public class EnemyDamage : MonoBehaviour
 {
-    private float m_damage = 5;
-    Health player;
+    private float m_damage = 15;
+    Health m_player;
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!collision.gameObject.CompareTag("Enemy") && !collision.gameObject.CompareTag("Detection"))
+        if (!collision.CompareTag("Enemy") && !collision.CompareTag("Detection"))
         {
-            player = collision.gameObject.GetComponent<Health>();
+            if (collision.CompareTag("Player"))
+            {
+                m_player = collision.GetComponent<Health>();
+                m_player.m_health -= m_damage;
+            }
+            
             Vector3 explosionPos = transform.position;
             Destroy(gameObject);
             VFXManager.CreateExplosion(explosionPos);
-            player.m_health -= m_damage;
+            
         }
     }
 }

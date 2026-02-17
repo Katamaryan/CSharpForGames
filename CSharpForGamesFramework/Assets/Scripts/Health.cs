@@ -3,12 +3,14 @@ using UnityEngine.UI;
 
 public class Health : MonoBehaviour
 {
-    [SerializeField] public float m_health;
+    public MenuManager m_menuManager;
+    public float m_health;
     private float m_maxHealth = 100;
     public Image m_healthBar;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
     {
+        m_menuManager = GameObject.FindWithTag("Menu").GetComponent<MenuManager>();
         m_health = m_maxHealth;
     }
 
@@ -19,7 +21,9 @@ public class Health : MonoBehaviour
 
         if (m_health <= 0)
         {
-            Debug.Log("YOU DIED!!!");
+            m_menuManager.ToggleDeathMenu();
+            Destroy(gameObject);
         }
     }
+
 }
